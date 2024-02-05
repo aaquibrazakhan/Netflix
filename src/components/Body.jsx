@@ -1,22 +1,29 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import {Browser, Login } from "./index";
-
+import { Browser, ErrorPage, Login } from "./index";
+import { useDispatch } from "react-redux";
 
 const Body = () => {
-  const appRouter= createBrowserRouter([
-    {
-      path:"/",
-      element:<Login/>
-    },
-    {
-      path:"/browser",
-      element:<Browser/>
-    },
 
-  ])
+  const dispatch = useDispatch()
+  const appRouter = createBrowserRouter([
+    {
+      path: "/",
+      element: <Login />,
+    },
+    {
+      path: "/browser",
+      element: <Browser />,
+    },
+    {
+      path: "*",
+      element: <ErrorPage />,
+    }
+  ]);
+
+  
   return (
     <div>
-      <RouterProvider router={appRouter}/>     
+      <RouterProvider router={appRouter} />
     </div>
   );
 };

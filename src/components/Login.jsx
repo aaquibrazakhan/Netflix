@@ -1,11 +1,68 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import { Header } from "./index";
+import { formValidate } from "../utils/Validate";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { auth } from "../utils/firebase";
 
 const Login = () => {
+  const [toggle, setToggle] = useState(false);
+
+  const emailref = useRef(null);
+  const passwordref = useRef(null);
+
+  const [error, setError] = useState(null);
+  const handleToggle = () => {
+    setToggle((pre) => !pre);
+  };
+  // console.log(toggle);
+  const handleSubmit = () => {
+    const message = formValidate(
+      emailref.current.value,
+      passwordref.current.value
+    );
+    setError(message);
+
+    // if (!message) return;
+
+    if (!toggle) {
+      console.log("sign up");
+      createUserWithEmailAndPassword(
+        auth,
+        emailref.current.value,
+        passwordref.current.value
+      )
+        .then((userCredential) => {
+          // Signed up
+          const user = userCredential.user;
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setError(errorCode + errorMessage);
+        });
+    } else {
+      console.log("sign in");
+      signInWithEmailAndPassword(
+        auth,
+        emailref.current.value,
+        passwordref.current.value
+      )
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setError(errorCode + errorMessage);
+        });
+    }
+  };
   return (
     <div>
-      gfjgjh
-      lkjksadjf
       <Header />
       <div className="relative h-screen">
         {/* Background Image */}
@@ -16,8 +73,27 @@ const Login = () => {
         />
         {/* Form */}
         <div className="bg-opacity-85 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black p-10 rounded-lg shadow-md">
-          <h1 className="text-3xl font-semibold text-white mb-6">Sign In</h1>
-          <form>
+          <h1 className="text-3xl font-semibold text-white mb-6">
+            {toggle ? "Sign In" : "Sign Up"}
+          </h1>
+          <form onSubmit={(e) => e.preventDefault()}>
+            {!toggle && (
+              <div className="mb-4">
+                <label
+                  htmlFor="name"
+                  className="block text-white text-sm font-medium mb-2"
+                >
+                  Name
+                </label>
+                <input
+                  type="name"
+                  id="name"
+                  name="name"
+                  className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 focus:outline-none focus:border-blue-500"
+                  placeholder="Enter you name"
+                />
+              </div>
+            )}
             <div className="mb-4">
               <label
                 htmlFor="email"
@@ -26,11 +102,12 @@ const Login = () => {
                 Email
               </label>
               <input
+                ref={emailref}
                 type="email"
                 id="email"
                 name="email"
                 className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 focus:outline-none focus:border-blue-500"
-                required
+                placeholder="Enter you Email"
               />
             </div>
             <div className="mb-6">
@@ -41,19 +118,27 @@ const Login = () => {
                 Password
               </label>
               <input
+                ref={passwordref}
                 type="password"
                 id="password"
                 name="password"
                 className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 focus:outline-none focus:border-blue-500"
-                required
+                placeholder="Enter you Password"
               />
             </div>
+            <p className="text-red-500 font-bold">{error}</p>
             <button
-              type="submit"
+              onClick={handleSubmit}
               className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 focus:outline-none"
             >
-              Sign In
+              {toggle ? "Sign In" : "Sign Up"}
             </button>
+            <p
+              className="text-white cursor-pointer mt-4"
+              onClick={handleToggle}
+            >
+              {!toggle ? `Already a User? Sign In` : `New User? Sign Up`}
+            </p>
           </form>
         </div>
       </div>

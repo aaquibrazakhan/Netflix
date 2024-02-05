@@ -1,9 +1,21 @@
-import React from 'react'
+import axios from "axios";
+import { Header, MainContainer, SecondContainer } from "./index";
+import { useEffect } from "react";
+import { options } from "../utils/constans";
+import { useDispatch } from "react-redux";
+import { addNowplayingMovie } from "../utils/redux/movieSlice";
+import useNowPlayingMovie from "../hooks/useNowPlayingMovie";
 
 const Browser = () => {
+ useNowPlayingMovie()
   return (
-    <div>Browser</div>
-  )
-}
+    <div>
+      <Header />
+      <MainContainer />
+      <SecondContainer />
 
-export default Browser
+    </div>
+  );
+};
+
+export default Browser;
